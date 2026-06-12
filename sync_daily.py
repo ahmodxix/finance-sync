@@ -2,6 +2,7 @@ from yahooquery import Ticker
 import requests
 import json
 import math
+import pandas as pd
 
 URL = "https://savefinancedata-aely4ywg2a-uc.a.run.app"
 
@@ -27,21 +28,31 @@ payload = {
 
 def clean_data(obj):
 
-    if isinstance(obj, dict):
+    # DataFrame
+    if isinstance(obj, pd.DataFrame):
+        return clean_data(
+            obj.reset_index().to_dict(orient="records")
+        )
+
+    # Dict
+    elif isinstance(obj, dict):
         return {
             str(k): clean_data(v)
             for k, v in obj.items()
         }
 
+    # List
     elif isinstance(obj, list):
         return [
             clean_data(x)
             for x in obj
         ]
 
+    # Tuple
     elif isinstance(obj, tuple):
         return str(obj)
 
+    # Float
     elif isinstance(obj, float):
 
         if math.isnan(obj):
@@ -63,7 +74,9 @@ def safe_convert(data):
             data = data.reset_index()
 
         if hasattr(data, "to_dict"):
-            data = data.to_dict(orient="records")
+            data = data.to_dict(
+                orient="records"
+            )
 
         return clean_data(data)
 
@@ -77,8 +90,10 @@ def safe_convert(data):
 # Recommendations
 try:
 
+    recommendations = ticker.recommendation_trend
+
     payload["recommendations"] = clean_data(
-        ticker.recommendation_trend
+        recommendations
     )
 
     print("recommendations OK")
@@ -91,8 +106,10 @@ except Exception as e:
 # Financials
 try:
 
+    financials = ticker.summary_detail
+
     payload["financials"] = clean_data(
-        ticker.summary_detail
+        financials
     )
 
     print("financials OK")
@@ -105,8 +122,10 @@ except Exception as e:
 # Earnings
 try:
 
+    earnings = ticker.earnings
+
     payload["earnings"] = safe_convert(
-        ticker.earnings
+        earnings
     )
 
     print("earnings OK")
@@ -119,8 +138,10 @@ except Exception as e:
 # SEC Filings
 try:
 
+    filings = ticker.sec_filings
+
     payload["sec_filings"] = safe_convert(
-        ticker.sec_filings
+        filings
     )
 
     print("sec filings OK")
@@ -130,12 +151,22 @@ except Exception as e:
     print("sec filings error:", e)
 
 
+# Final cleanup
 payload = clean_data(payload)
 
-json.dumps(payload, allow_nan=False)
+# Debug
+for key, value in payload.items():
+    print(key, type(value))
+
+# Validate JSON
+json.dumps(
+    payload,
+    allow_nan=False
+)
 
 print("JSON VALID")
 
+# Send to Firebase
 response = requests.post(
     URL,
     json=payload,
