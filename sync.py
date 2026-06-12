@@ -1,20 +1,89 @@
 from yahooquery import Ticker
+import requests
 
-stocks = ["AAPL", "MSFT", "NVDA", "TSLA"]
+FINANCE_FUNCTION_URL = \
+    "https://savefinancedata-aely4ywg2a-uc.a.run.app"
 
-ticker = Ticker(stocks)
+stocks = [
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "TSLA",
+    "AMZN",
+    "GOOG",
+    "META"
+]
 
-print("PRICE")
-print(ticker.price)
+crypto = [
+    "BTC-USD",
+    "ETH-USD",
+    "BNB-USD",
+    "SOL-USD"
+]
 
-print("PROFILE")
-print(ticker.asset_profile)
+indices = [
+    "^GSPC",
+    "^DJI",
+    "^IXIC",
+    "^NSEI",
+    "^BSESN"
+]
 
-print("SUMMARY")
-print(ticker.summary_detail)
+payload = {
+    "stocks": {},
+    "crypto": {},
+    "indices": {},
+    "company_profiles": {},
+    "summary": {}
+}
 
-print("ESG")
-print(ticker.esg_scores)
+# STOCKS
+stock_ticker = Ticker(stocks)
 
-print("RECOMMENDATIONS")
-print(ticker.recommendation_trend)
+prices = stock_ticker.price
+
+for symbol in stocks:
+    payload["stocks"][symbol] = prices.get(symbol, {})
+
+# COMPANY PROFILES
+profiles = stock_ticker.asset_profile
+
+for symbol in stocks:
+    payload["company_profiles"][symbol] = \
+        profiles.get(symbol, {})
+
+# SUMMARY
+summary = stock_ticker.summary_detail
+
+for symbol in stocks:
+    payload["summary"][symbol] = \
+        summary.get(symbol, {})
+
+# CRYPTO
+crypto_ticker = Ticker(crypto)
+
+crypto_prices = crypto_ticker.price
+
+for symbol in crypto:
+    payload["crypto"][symbol] = \
+        crypto_prices.get(symbol, {})
+
+# INDICES
+index_ticker = Ticker(indices)
+
+index_prices = index_ticker.price
+
+for symbol in indices:
+    payload["indices"][symbol] = \
+        index_prices.get(symbol, {})
+
+# SEND TO FIREBASE
+
+response = requests.post(
+    FINANCE_FUNCTION_URL,
+    json=payload,
+    timeout=60
+)
+
+print("STATUS:", response.status_code)
+print(response.text)
