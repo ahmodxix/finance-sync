@@ -2,7 +2,7 @@ from yahooquery import Ticker
 import requests
 
 FINANCE_FUNCTION_URL = \
-    "https://savenews-aely4ywg2a-uc.a.run.app"
+    "https://savefinancedata-aely4ywg2a-uc.a.run.app"
 
 stocks = [
     "AAPL",
