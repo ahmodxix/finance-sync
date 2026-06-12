@@ -1,12 +1,20 @@
 from yahooquery import Ticker
 
-ticker = Ticker("AAPL")
+stocks = ["AAPL", "MSFT", "NVDA", "TSLA"]
+
+ticker = Ticker(stocks)
 
 print("PRICE")
-print(type(ticker.price))
+print(ticker.price)
 
 print("PROFILE")
-print(type(ticker.asset_profile))
+print(ticker.asset_profile)
 
 print("SUMMARY")
-print(type(ticker.summary_detail))
+print(ticker.summary_detail)
+
+print("ESG")
+print(ticker.esg_scores)
+
+print("RECOMMENDATIONS")
+print(ticker.recommendation_trend)
