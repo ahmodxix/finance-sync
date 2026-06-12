@@ -24,28 +24,57 @@ except:
     pass
 
 try:
-    payload["institution_ownership"] = \
-        ticker.institution_ownership
-except:
-    pass
+    data = ticker.institution_ownership
+
+    if hasattr(data, "to_dict"):
+        data = data.to_dict()
+
+    payload["institution_ownership"] = data
+
+except Exception as e:
+    print("institution_ownership", e)
+
+
+
 
 try:
-    payload["fund_ownership"] = \
-        ticker.fund_ownership
-except:
-    pass
+    data = ticker.fund_ownership
+
+    if hasattr(data, "to_dict"):
+        data = data.to_dict()
+
+    payload["fund_ownership"] = data
+
+except Exception as e:
+    print("fund_ownership", e)
+
+
+
 
 try:
-    payload["major_holders"] = \
-        ticker.major_holders
-except:
-    pass
+    data = ticker.major_holders
+
+    if hasattr(data, "to_dict"):
+        data = data.to_dict()
+
+    payload["major_holders"] = data
+
+except Exception as e:
+    print("major_holders", e)
+
+
+
 
 try:
-    payload["insider_transactions"] = \
-        ticker.insider_transactions
-except:
-    pass
+    data = ticker.insider_transactions
+
+    if hasattr(data, "to_dict"):
+        data = data.to_dict()
+
+    payload["insider_transactions"] = data
+
+except Exception as e:
+    print("insider_transactions", e)
 
 r = requests.post(URL, json=payload)
 
