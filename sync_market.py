@@ -4,15 +4,34 @@ import requests
 URL = "https://savefinancedata-aely4ywg2a-uc.a.run.app"
 
 stocks = [
-    "AAPL","MSFT","NVDA","TSLA",
-    "AMZN","GOOG","META"
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "TSLA",
+    "AMZN",
+    "GOOG",
+    "META",
+    "NFLX",
+    "AMD",
+    "PLTR",
+    "JPM",
+    "BAC",
+    "KO",
+    "PEP",
+    "NKE",
+    "RELIANCE.NS",
+    "TCS.NS",
+    "INFY.NS",
 ]
 
 crypto = [
     "BTC-USD",
     "ETH-USD",
     "BNB-USD",
-    "SOL-USD"
+    "SOL-USD",
+    "XRP-USD",
+    "DOGE-USD",
+    "ADA-USD",
 ]
 
 indices = [
@@ -20,7 +39,7 @@ indices = [
     "^DJI",
     "^IXIC",
     "^NSEI",
-    "^BSESN"
+    "^BSESN",
 ]
 
 payload = {
@@ -31,31 +50,48 @@ payload = {
 }
 
 # STOCKS
-ticker = Ticker(stocks)
+stock_ticker = Ticker(stocks)
 
-for s, v in ticker.price.items():
-    payload["stocks"][s] = v
+for symbol, data in stock_ticker.price.items():
+    payload["stocks"][symbol] = data
 
 # CRYPTO
-ct = Ticker(crypto)
+crypto_ticker = Ticker(crypto)
 
-for s, v in ct.price.items():
-    payload["crypto"][s] = v
+for symbol, data in crypto_ticker.price.items():
+    payload["crypto"][symbol] = data
 
 # INDICES
-it = Ticker(indices)
+index_ticker = Ticker(indices)
 
-for s, v in it.price.items():
-    payload["indices"][s] = v
+for symbol, data in index_ticker.price.items():
+    payload["indices"][symbol] = data
 
 # NEWS
 try:
-    news = ticker.news()
-    payload["market_news"] = news
-except:
-    pass
+    news = stock_ticker.news()
 
-r = requests.post(URL, json=payload, timeout=120)
+    cleaned_news = []
 
-print(r.status_code)
+    for item in news[:50]:
+        cleaned_news.append({
+            "title": item.get("title", ""),
+            "publisher": item.get("publisher", ""),
+            "link": item.get("link", ""),
+            "published": item.get("providerPublishTime", 0),
+            "thumbnail": item.get("thumbnail", {})
+        })
+
+    payload["market_news"] = cleaned_news
+
+except Exception as e:
+    print("News Error:", e)
+
+r = requests.post(
+    URL,
+    json=payload,
+    timeout=120
+)
+
+print("STATUS:", r.status_code)
 print(r.text)
