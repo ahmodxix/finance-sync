@@ -16,15 +16,14 @@ news_items = response.json()
 for item in news_items[:100]:
 
     payload = {
-        "title": item.get("headline", ""),
-        "imageUrl": item.get("image", ""),
-        "category": item.get("category", "Markets"),
-        "articleUrl": item.get("url", ""),
-        "source": item.get("source", ""),
-        "publishedAt": str(
-            item.get("datetime", 0)
-        )
-    }
+    "title": item.get("headline", ""),
+    "imageUrl": item.get("image", ""),
+    "articleUrl": item.get("url", ""),
+    "source": item.get("source", ""),
+    "category": item.get("category", "Markets"),
+    "summary": item.get("summary", ""),
+    "publishedAt": item.get("datetime", 0),
+}
 
     try:
         r = requests.post(
