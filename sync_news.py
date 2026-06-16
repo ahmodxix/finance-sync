@@ -3,7 +3,7 @@ from datetime import datetime
 
 FINNHUB_API_KEY = "d7cjehhr01qv03esj040d7cjehhr01qv03esj04g"
 
-SAVE_NEWS_URL = "https://savenews-aely4ywg2a-uc.a.run.app"
+SAVE_NEWS_URL = "https://savenews-aelyywg2a-uc.a.run.app"
 
 url = (
     f"https://finnhub.io/api/v1/news"
